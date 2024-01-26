@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  createdOn: { date: Date },
+  createdOn: Date,
 });
 
 const User = mongoose.model("User", userSchema);
