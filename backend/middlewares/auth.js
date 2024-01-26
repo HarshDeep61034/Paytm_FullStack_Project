@@ -5,7 +5,6 @@ function authenticateUser(req, res, next) {
   const { authorization } = req.headers;
   let token = "";
   if (authorization === undefined) {
-    console.log("papa jeet gaye");
     token = req.cookies.token;
   } else {
     const TokenArray = authorization.split(" ");
