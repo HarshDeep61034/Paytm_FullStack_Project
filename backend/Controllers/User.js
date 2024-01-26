@@ -6,7 +6,7 @@ require("dotenv").config();
 const jwtkey = process.env.JWT_SECRET;
 const { generateUsername } = require("../utils/utils.js");
 const User = require("../Models/User.js");
-
+const Account = require("../Models/Account.js");
 const userSchemaZod = z.object({
   username: z.string(),
   email: z.string().email(),
@@ -19,7 +19,6 @@ const userSchemaZod = z.object({
 async function handleUserSignup(req, res) {
   // destructuring body object
   const { firstName, lastName, password, email } = req.body;
-
   // encrypting password
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -46,6 +45,8 @@ async function handleUserSignup(req, res) {
 
       // creating user in DB
       User.create(inputIsValid.data);
+      const money = Math.floor(Math.random() * 10000);
+      Account.create({ userid: username, balance: money });
     } else {
       res.status(403).json({ message: "Invalid Inputs" });
     }
