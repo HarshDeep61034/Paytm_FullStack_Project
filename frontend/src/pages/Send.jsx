@@ -1,3 +1,4 @@
+import ProfileLogo from "../components/ProfileLogo";
 import React from "react";
 import { useForm } from "react-hook-form";
 const Send = () => {
@@ -16,9 +17,7 @@ const Send = () => {
         >
           <h1 className="text-center font-bold text-4xl my-5">Send Money</h1>
           <div className="flex items-center">
-            <div className="rounded-[50%] w-24 h-24 flex justify-center items-center bg-green-500">
-              <p className="text-white text-4xl font-bold">A</p>
-            </div>
+            <ProfileLogo />
             <div className="font-bold text-2xl mx-3">Friend's Name</div>
           </div>
           <p className="font-semibold">Amount: (in Rs)</p>
