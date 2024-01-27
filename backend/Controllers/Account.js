@@ -6,13 +6,15 @@ async function handleGetAccountBalance(req, res) {
   const userid = req.user;
   const accountInDb = await Account.find({ userid });
   const balance = accountInDb[0].balance;
-  res.status(200).json({ balance });
+  res.status(200).json({ balance, userid });
   console.log(accountInDb);
 }
 
 async function handleTransferBalance(req, res) {
   const userid = req.user;
   const { to, amount } = req.body;
+
+  console.log("REQUESST AYII");
   const myAccount = await Account.findOne({ userid });
   if (myAccount.balance < amount) {
     res.status(403).json({ message: "Insufficent Balance" });
@@ -22,32 +24,33 @@ async function handleTransferBalance(req, res) {
   if (!toAccount) {
     res.status(404).json({ message: "Receiving User doesn't exists!!" });
   }
-
-  await Account.updateOne(
-    {
-      userid,
-    },
-    {
-      $inc: {
-        balance: -amount,
+  if (myAccount.balance > amount) {
+    await Account.updateOne(
+      {
+        userid,
       },
-    },
-  );
-
-  await Account.updateOne(
-    {
-      userid: to,
-    },
-    {
-      $inc: {
-        balance: amount,
+      {
+        $inc: {
+          balance: -amount,
+        },
       },
-    },
-  );
+    );
 
-  res.json({
-    message: "Transfer successful",
-  });
+    await Account.updateOne(
+      {
+        userid: to,
+      },
+      {
+        $inc: {
+          balance: amount,
+        },
+      },
+    );
+    res.json({
+      success: true,
+      message: "Transfer successful",
+    });
+  }
 }
 
 module.exports = { handleGetAccountBalance, handleTransferBalance };

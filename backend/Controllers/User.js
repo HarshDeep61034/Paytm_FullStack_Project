@@ -19,7 +19,6 @@ async function handleUserSignup(req, res) {
   // destructuring body object
   const { firstName, lastName, password, email } = req.body;
   const userAlreadyExists = (await User.exists({ email })) !== null;
-  console.log(userAlreadyExists);
   if (userAlreadyExists) {
     res.status(411).json({
       success: false,
@@ -46,8 +45,6 @@ async function handleUserSignup(req, res) {
     const inputIsValid = userSchemaZod.safeParse(userObject);
 
     if (inputIsValid.success) {
-      console.log("User Created in DB");
-
       // creating user in DB
       User.create(inputIsValid.data);
       const money = Math.floor(Math.random() * 10000);
@@ -70,18 +67,22 @@ async function handleUserSignup(req, res) {
 async function handleUserSignin(req, res) {
   const { email, password } = req.body;
   const userinDb = await User.findOne({ email });
-  const username = userinDb.username;
-  const checkPassword = await bcrypt.compare(password, userinDb.password);
-  if (checkPassword) {
-    jwt.sign({ username }, jwtkey, (_err, token) => {
-      res.cookie("token", token);
-      res.status(200).json({
-        message: "User Authenticated",
-        token,
+  if (userinDb !== null) {
+    const username = userinDb.username;
+    const checkPassword = await bcrypt.compare(password, userinDb.password);
+    if (checkPassword) {
+      jwt.sign({ username }, jwtkey, (_err, token) => {
+        res.cookie("token", token);
+        res.status(200).json({
+          message: "User Authenticated",
+          token,
+        });
       });
-    });
+    } else {
+      res.status(401).json({ message: "Invalid Password" });
+    }
   } else {
-    res.status(401).json({ message: "Invalid Password" });
+    res.status(404).json({ success: false, message: "404 user not found" });
   }
 }
 
@@ -129,13 +130,14 @@ async function handleUserUpdate(req, res) {
 
 async function handleUserFilter(req, res) {
   const filter = req.query.filter;
+  const regex = new RegExp(filter, "i");
   const filteredUsers = await User.find({
     $or: [
       {
-        firstName: filter,
+        firstName: regex,
       },
       {
-        lastName: filter,
+        lastName: regex,
       },
     ],
   });
