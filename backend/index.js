@@ -13,7 +13,7 @@ connect().then(() => console.log("connected to Mongo DB"));
 
 //LIBRARY MIDDLEWARES
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 //CUSTOM MIDDLEWARES
 app.use("/api/v1/account", accountRouter);

@@ -1,6 +1,5 @@
 const { z } = require("zod");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const jwtkey = process.env.JWT_SECRET;
@@ -19,27 +18,33 @@ const userSchemaZod = z.object({
 async function handleUserSignup(req, res) {
   // destructuring body object
   const { firstName, lastName, password, email } = req.body;
-  // encrypting password
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-  // generating username
-  const username = generateUsername(firstName, lastName);
-
-  // defined user object for parsing through zod
-  const date = new Date().toISOString();
-  const userObject = {
-    username,
-    email,
-    firstName,
-    lastName,
-    password: hashedPassword,
-    createdOn: date,
-  };
-
-  const inputIsValid = userSchemaZod.safeParse(userObject);
   const userAlreadyExists = (await User.exists({ email })) !== null;
+  console.log(userAlreadyExists);
+  if (userAlreadyExists) {
+    res.status(411).json({
+      success: false,
+      message: "User Already Exists",
+    });
+  } else {
+    // encrypting password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  if (!userAlreadyExists) {
+    // generating username
+    const username = generateUsername(firstName, lastName);
+
+    // defined user object for parsing through zod
+    const date = new Date().toISOString();
+    const userObject = {
+      username,
+      email,
+      firstName,
+      lastName,
+      password: hashedPassword,
+      createdOn: date,
+    };
+
+    const inputIsValid = userSchemaZod.safeParse(userObject);
+
     if (inputIsValid.success) {
       console.log("User Created in DB");
 
@@ -48,19 +53,16 @@ async function handleUserSignup(req, res) {
       const money = Math.floor(Math.random() * 10000);
       Account.create({ userid: username, balance: money });
     } else {
-      res.status(403).json({ message: "Invalid Inputs" });
+      res.status(403).json({ sucess: false, message: "Invalid Inputs" });
     }
 
     jwt.sign({ username }, jwtkey, (_err, token) => {
       res.cookie("token", token);
       res.status(200).json({
+        success: true,
         message: "User created successfully",
         token,
       });
-    });
-  } else {
-    res.status(411).json({
-      message: "User Already Exists",
     });
   }
 }
