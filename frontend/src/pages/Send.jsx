@@ -1,24 +1,45 @@
 import ProfileLogo from "../components/ProfileLogo";
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 const Send = () => {
+  const [error, setError] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-
+  const token = Cookies.get("token");
+  const { to } = useParams();
+  const navigate = useNavigate();
+  function handleSubmitBackend(data) {
+    data["to"] = to;
+    axios
+      .post("http://192.168.56.87:3000/api/v1/account/transfer", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .then(() => navigate("/dashboard"))
+      .catch((err) => setError(err.response.data.message));
+  }
   return (
     <div className="w-screen h-screen flex justify-center items-center">
       <div>
+        <p className="text-red-600 underline">{error && error}</p>
         <form
-          onSubmit={handleSubmit((data) => console.log(data))}
+          onSubmit={handleSubmit((data) => handleSubmitBackend(data))}
           className="flex flex-col border-zinc-800 border-[1px] p-6 items-center rounded-lg"
         >
           <h1 className="text-center font-bold text-4xl my-5">Send Money</h1>
           <div className="flex items-center">
-            <ProfileLogo />
-            <div className="font-bold text-2xl mx-3">Friend's Name</div>
+            <ProfileLogo userid={to} />
+            <div className="font-bold text-2xl mx-3">{to}</div>
           </div>
           <p className="font-semibold">Amount: (in Rs)</p>
 

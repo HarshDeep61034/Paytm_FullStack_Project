@@ -6,9 +6,11 @@ function authenticateUser(req, res, next) {
   let token = "";
   if (authorization === undefined) {
     token = req.cookies.token;
+    console.log("bhenchod");
   } else {
     const TokenArray = authorization.split(" ");
 
+    console.log(TokenArray);
     token = TokenArray[1];
   }
 
@@ -17,6 +19,7 @@ function authenticateUser(req, res, next) {
     req.user = decoded.username;
     next();
   } catch (error) {
+    console.log("PAKDA GAYA");
     res.status(401).json({ message: "Invalid Cookie Signin again!!" });
   }
 }

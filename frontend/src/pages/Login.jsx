@@ -12,14 +12,17 @@ function Login() {
     formState: { errors },
   } = useForm();
   function handleSubmitBackend(data) {
-    console.log(data);
     axios
-      .post("http://localhost:3000/api/v1/user/signin", data)
+      .post("http://192.168.56.87:3000/api/v1/user/signin", data)
       .then((res) => {
-        Cookies.set("token", res.data.token);
+        if (res.data.token !== undefined) {
+          Cookies.set("token", res.data.token);
+        }
       })
       .then(() => navigate("/dashboard"))
-      .catch((err) => setError(err.data.message));
+      .catch((err) => {
+        setError(err.response.data.message);
+      });
   }
 
   const navigate = useNavigate();
@@ -41,6 +44,7 @@ function Login() {
             <p className="text-slate-500 text-center">
               Enter Your information to Login
             </p>
+            <p className="text-red-600 underline"> {error && error}</p>
             <input
               type="email"
               name="email"

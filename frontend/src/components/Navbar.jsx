@@ -1,7 +1,6 @@
-import React from "react";
 import logo from "../assets/payit.png";
 import ProfileLogo from "./ProfileLogo";
-const Navbar = () => {
+const Navbar = ({ userid }) => {
   return (
     <div className="flex bg-sky-500 rounded-md border-black border-2 m-2 text-white font-semibold items-center justify-between">
       <div>
@@ -11,8 +10,8 @@ const Navbar = () => {
         />
       </div>
       <div className="flex items-center">
-        Hello, User
-        <ProfileLogo />
+        Hello, {userid}
+        <ProfileLogo userid={userid} />
       </div>
     </div>
   );
