@@ -1,12 +1,27 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/payit.png";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useState } from "react";
 function Login() {
+  const [error, setError] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  function handleSubmitBackend(data) {
+    console.log(data);
+    axios
+      .post("http://localhost:3000/api/v1/user/signin", data)
+      .then((res) => {
+        Cookies.set("token", res.data.token);
+      })
+      .then(() => navigate("/dashboard"))
+      .catch((err) => setError(err.data.message));
+  }
+
   const navigate = useNavigate();
   return (
     <>
@@ -19,7 +34,7 @@ function Login() {
         </div>
         <div className="h-4/5  md:w-3/5 md:h-auto bg-white p-8 flex justify-center items-center">
           <form
-            onSubmit={handleSubmit((data) => console.log(data))}
+            onSubmit={handleSubmit((data) => handleSubmitBackend(data))}
             className="flex flex-col border-zinc-800 border-[1px] p-2 items-center rounded-lg"
           >
             <h1 className="text-center font-bold text-2xl">Log In</h1>
