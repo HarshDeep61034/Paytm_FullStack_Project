@@ -1,13 +1,31 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/payit.png";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useState } from "react";
 function Signup() {
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  function handleSubmitBackend(data) {
+    axios
+      .post("http://localhost:3000/api/v1/user/signup", data)
+      .then((res) => {
+        if (res.data.token !== undefined) {
+          Cookies.set("token", res.data.token);
+        }
+      })
+      .then(() => navigate("/dashboard"))
+      .catch((err) => {
+        setError(err.response.data.message);
+      });
+  }
   return (
     <>
       <div className="h-screen flex flex-col md:flex-row">
@@ -19,13 +37,14 @@ function Signup() {
         </div>
         <div className="h-4/5  md:w-3/5 md:h-auto bg-white p-8 flex justify-center items-center">
           <form
-            onSubmit={handleSubmit((data) => console.log(data))}
+            onSubmit={handleSubmit((data) => handleSubmitBackend(data))}
             className="flex flex-col border-zinc-800 border-[1px] p-2 items-center rounded-lg"
           >
             <h1 className="text-center font-bold text-2xl">Sign Up</h1>
             <p className="text-slate-500 text-center">
               Enter Your information to create an account
             </p>
+            <p className="text-red-600 underline"> {error && error}</p>
             <input
               type="text"
               name="firstName"
