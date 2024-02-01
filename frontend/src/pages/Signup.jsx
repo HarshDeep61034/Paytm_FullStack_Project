@@ -15,7 +15,7 @@ function Signup() {
 
   function handleSubmitBackend(data) {
     axios
-      .post("http://192.168.56.87:3000/api/v1/user/signup", data)
+      .post("http://localhost:3000/api/v1/user/signup", data)
       .then((res) => {
         if (res.data.token !== undefined) {
           Cookies.set("token", res.data.token);

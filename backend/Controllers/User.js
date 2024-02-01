@@ -143,9 +143,32 @@ async function handleUserFilter(req, res) {
   });
   res.status(200).json({ users: filteredUsers });
 }
+
+async function handleUserAuth(req, res) {
+  console.log(req.headers);
+  // const { Authorization } = req.headers;
+  // console.log("pohoch toh gayi!");
+  // console.log(Authorization);
+  // let token = "";
+  // if (Authorization === undefined) {
+  //   token = req.cookies.token;
+  // } else {
+  //   const TokenArray = Authorization.split(" ");
+  //   token = TokenArray[1];
+  // }
+  // try {
+  //   const decoded = jwt.verify(token, jwtkey);
+  //   req.user = decoded.username;
+  //   res.json({ success: true, message: "User Authenticated!", username });
+  // } catch (error) {
+  //   res.status(401).json({ message: "Invalid Cookie Signin again!!" });
+  // }
+}
+
 module.exports = {
   handleUserSignup,
   handleUserSignin,
   handleUserUpdate,
   handleUserFilter,
+  handleUserAuth,
 };

@@ -17,7 +17,7 @@ const Send = () => {
   function handleSubmitBackend(data) {
     data["to"] = to;
     axios
-      .post("http://192.168.56.87:3000/api/v1/account/transfer", data, {
+      .post("http://localhost:3000/api/v1/account/transfer", data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

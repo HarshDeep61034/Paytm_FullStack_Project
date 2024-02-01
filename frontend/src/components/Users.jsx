@@ -9,7 +9,7 @@ const Users = () => {
   useEffect(() => {
     if (input.length > 0) {
       axios
-        .get(`http://192.168.56.87:3000/api/v1/user/bulk?filter=${input}`)
+        .get(`http://localhost:3000/api/v1/user/bulk?filter=${input}`)
         .then((res) => setUsers(res.data.users));
     }
   }, [input]);
